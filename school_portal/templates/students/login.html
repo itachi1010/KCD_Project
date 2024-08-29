@@ -1,17 +1,64 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Login{% endblock %}
 
 {% block content %}
-        <h2>Login</h2>
-        <form method="post">
-            {% csrf_token %}
-            <label for="username">Email or Matric Number:</label>
-            <input type="text" name="username" required><br>
-            <label for="password">Password:</label>
-            <input type="password" name="password" required><br>
-            <button type="submit">Login</button>
-        </form>
-        <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
-        {% endblock %}
+<div class="wrapper">
+	<div class="preloader"></div>
+
+	<!-- Our LogIn Register -->
+	<section class="our-log login-bg pb180">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6 offset-md-3">
+					<div class="login_page_logo text-center">
+                        <img class="logo1 img-fluid" src="{% static 'images/header-logo.png' %}" alt="header-logo">
+					</div>
+				</div>
+			</div>
+            <div class="divide">
+                <span class="lf_divider">Welcome</span>
+                <hr>
+            </div>
+			<div class="row">
+				<div class="col-sm-12 col-lg-6 offset-lg-3">
+					<div class="login_form inner_page style2">
+                        <form method="post">
+                            {% csrf_token %}
+
+							<div class="heading">
+								<h3 class="text-center">Login to your account</h3>
+								<p class="text-center">Don't have an account? <a class="text-thm" href="{% url 'register' %}">Sign Up!</a></p>
+							</div>
+							 <div class="form-group">
+                                {% comment %} <label for="username"></label> {% endcomment %}
+                                <input class="form-control" placeholder="Email Address" type="text" name="username" required>
+						    	{% comment %} <input for="username" class="form-control" id="exampleInputEmail3" placeholder="Email Or Matric Number"> {% endcomment %}
+							</div>
+							<div class="form-group">
+                                {% comment %} <label for="password">Password:</label> {% endcomment %}
+                                <input class="form-control" type="password" name="password" placeholder="Password" required>
+						    	{% comment %} <input type="password" class="form-control" id="exampleInputPassword4" placeholder="Password"> {% endcomment %}
+							</div>
+							<div class="form-group custom-control custom-checkbox">
+								<input type="checkbox" class="custom-control-input" id="exampleCheck3">
+								<label class="custom-control-label" for="exampleCheck3">Remember me</label>
+								<a class="tdu btn-fpswd float-right" href="{% url 'change_password' %}">Forgot Password?</a>
+							</div>
+							<button type="submit" class="btn btn-log btn-block btn-thm2">Login</button>
+
+							<div class="row mt40">
+
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+<a class="scrollToHome" href="#"><i class="flaticon-up-arrow-1"></i></a>
+</div>
+{% endblock %}
     

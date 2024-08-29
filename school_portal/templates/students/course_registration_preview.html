@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Course Registration Preview{% endblock %}
+
+{% block content %}
+    <h2>Course Registration Preview</h2>
+    <p><strong>Name:</strong> {{ registration.name }}</p>
+    <p><strong>Registration Number:</strong> {{ registration.reg_number }}</p>
+    <p><strong>Session:</strong> {{ registration.session }}</p>
+    <p><strong>Total Credit Load:</strong> {{ registration.total_credit_load }}</p>
+
+    <h3>Courses Registered</h3>
+    <ul>
+        {% for course in registration.courses.all %}
+            <li>{{ course.course_code }} - {{ course.course_title }} ({{ course.credit_load }} credits)</li>
+        {% endfor %}
+    </ul>
+
+    <button onclick="window.print()">Print</button>
+{% endblock %}

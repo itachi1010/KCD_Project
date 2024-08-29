@@ -1,14 +1,41 @@
 {% extends 'base.html' %}
+{% load static %}
 
+{% block title %}Register{% endblock %}
 
-    {% block title %}Register{% endblock %}
-    
-    {% block content %}
-    <h2>Register</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Register</button>
-    </form>
-    <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
-    {% endblock %}
+{% block content %}
+<div class="wrapper">
+    <div class="preloader"></div>
+
+    <!-- Our LogIn Register -->
+    <section class="our-log login-bg pb180">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <div class="login_page_logo text-center">
+                        <img class="logo1 img-fluid" src="{% static 'images/header-logo.png' %}" alt="header-logo">
+                    </div>
+                </div>
+            </div>
+            <div class="divide">
+                <span class="lf_divider">Welcome</span>
+                <hr>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-lg-6 offset-lg-3">
+                    <div class="login_form inner_page style2">
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit" class="btn btn-primary">Register</button>
+                        </form>
+                        <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <a class="scrollToHome" href="#"><i class="flaticon-up-arrow-1"></i></a>
+</div>
+{% endblock %}

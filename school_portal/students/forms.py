@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, Profile, CourseRegistration, ConfirmFees
+from .models import User, Profile, CourseRegistration, ConfirmFees, Course
 
 
 # Define the choices for school years
@@ -22,8 +22,36 @@ SESSION_CHOICES = [
 
 
 
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from .models import User, Profile, CourseRegistration, ConfirmFees
+
 class RegistrationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control custom-input',
+            'placeholder': 'Enter your email'
+        })
+    )
+    matric_number = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control custom-input',
+            'placeholder': 'Matriculation Number'
+        })
+    )
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control custom-input',
+            'placeholder': 'Enter your password'
+        })
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control custom-input',
+            'placeholder': 'Confirm your password'
+        })
+    )
 
     class Meta:
         model = User
@@ -38,25 +66,50 @@ class ProfileForm(forms.ModelForm):
      
 
 
+
+from django import forms
+from .models import Course, CourseRegistration
+
 class CourseRegistrationForm(forms.ModelForm):
-    current_year_of_study = forms.ChoiceField(
-        choices=SCHOOL_YEAR_CHOICES,
-        error_messages={'required': 'Please select your current year of study.'}
-    )
-    session = forms.ChoiceField(
-        choices=SESSION_CHOICES,
-        error_messages={'required': 'Please select a session.'}
+    courses = forms.ModelMultipleChoiceField(
+        queryset=Course.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True,
+        label="Select Courses"
     )
 
     class Meta:
         model = CourseRegistration
-        fields = ['session', 'reference_number', 'name', 'reg_number', 'current_year_of_study', 'gender']
+        fields = ['session', 'reference_number', 'name', 'reg_number', 'current_year_of_study', 'gender', 'courses']
 
-    def clean_reference_number(self):
-        ref_num = self.cleaned_data.get('reference_number')
-        if not ref_num.isdigit():
-            raise forms.ValidationError('Reference number must be numeric.')
-        return ref_num
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['courses'].label_from_instance = self.label_from_instance
+
+    def label_from_instance(self, obj):
+        return f"{obj.course_code} - {obj.course_title} ({obj.credit_load} credits)"
+
+    def clean_courses(self):
+        selected_courses = self.cleaned_data.get('courses')
+        total_credit_load = sum(course.credit_load for course in selected_courses)
+        
+        # if not (8 <= len(selected_courses) <= 9):
+        #     raise forms.ValidationError("You must register between 8 and 9 courses.")
+        
+        if total_credit_load > 24:
+            raise forms.ValidationError("Total credit load cannot exceed 24.")
+
+        return selected_courses
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.total_credit_load = sum(course.credit_load for course in self.cleaned_data['courses'])
+        if commit:
+            instance.save()
+            self.save_m2m()  # Save the many-to-many field (courses)
+        return instance
+
+
 
         
 

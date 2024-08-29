@@ -5,7 +5,7 @@ from .forms import RegistrationForm, ProfileForm, CourseRegistrationForm, Confir
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
-from .models import Profile
+from .models import CourseRegistration, Profile
 
 @login_required
 def home(request):
@@ -58,21 +58,22 @@ def profile(request):
     else:
         form = ProfileForm(instance=profile)
     
-    return render(request, 'students/profile.html', {'form': form})
+    return render(request, 'students/profile.html', {'form': form, 'profile': profile})
 
 @login_required
 def course_registration(request):
     if request.method == 'POST':
         form = CourseRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
+            registration = form.save()
             messages.success(request, 'Course registration successful!')
-            return redirect('home')
+            return redirect('course_registration_preview', pk=registration.pk)
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = CourseRegistrationForm()
     return render(request, 'students/course_registration.html', {'form': form})
+
 
 @login_required
 def confirm_fees(request):
@@ -109,3 +110,9 @@ def logout_view(request):
     logout(request)
     messages.info(request, 'You have been logged out.')
     return redirect('login')
+
+
+@login_required
+def course_registration_preview(request, pk):
+    registration = CourseRegistration.objects.get(pk=pk)
+    return render(request, 'students/course_registration_preview.html', {'registration': registration})

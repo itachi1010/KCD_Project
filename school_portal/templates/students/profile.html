@@ -1,10 +1,44 @@
 {% extends 'base.html' %}
-    {% block title %}Profile{% endblock %}
-    {% block content %}
+{% block title %}Profile{% endblock %}
+{% block content %}
     <h2>Profile</h2>
+    
+    <!-- Display the carousel if images are present -->
+    {% if profile.school_fees_receipt or profile.dept_fees_receipt or profile.faculty_fees_receipt %}
+        <div id="profileCarousel" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+                {% if profile.school_fees_receipt %}
+                    <div class="carousel-item active">
+                        <img src="{{ profile.school_fees_receipt.url }}" class="d-block mx-auto carousel-image" alt="School Fees Receipt">
+                    </div>
+                {% endif %}
+                {% if profile.dept_fees_receipt %}
+                    <div class="carousel-item {% if not profile.school_fees_receipt %}active{% endif %}">
+                        <img src="{{ profile.dept_fees_receipt.url }}" class="d-block mx-auto carousel-image" alt="Dept Fees Receipt">
+                    </div>
+                {% endif %}
+                {% if profile.faculty_fees_receipt %}
+                    <div class="carousel-item {% if not profile.school_fees_receipt and not profile.dept_fees_receipt %}active{% endif %}">
+                        <img src="{{ profile.faculty_fees_receipt.url }}" class="d-block mx-auto carousel-image" alt="Faculty Fees Receipt">
+                    </div>
+                {% endif %}
+            </div>
+            <a class="carousel-control-prev" href="#profileCarousel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#profileCarousel" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+    {% else %}
+        <p>No receipts uploaded.</p>
+    {% endif %}
+
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Save</button>
+        <button type="submit" class="btn btn-primary">Save</button>
     </form>
-    {% endblock %}
+{% endblock %}
